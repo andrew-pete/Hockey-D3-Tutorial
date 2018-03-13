@@ -92,9 +92,9 @@ For this tutorial, we'll be making a scatter plot showing each player's Corsi-fo
 - Time on Ice (Bubble Size?)
 - Player Name (As sort of text annotation)
 
-As someone who has definitely not done this exact visualization before, this is a good idea of what our end result will be:
+As someone who has *definitely not done* this exact visualization before, this is a good idea of what our end result will be:
 
-@[Scatter Final]()
+![Scatter Final](./assets/final_scatter.png)
 
 Keep these in mind as we begin to code.
 
