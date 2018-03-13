@@ -18,7 +18,7 @@ The following are recommended (but not required) to truly get the most from this
 
 - Some programming experience (Python, Java, JavaScript, or the like). Understanding variables, functions, and primitive types (including Arrays) is about what we're looking for.
 - A *very baseline* understanding of HTML.
-- Minimal understanding of Hockey "advanced stats" terminology. For a great primer, see Charlie O'Connor's [article](https://t.co/nUgxqcrj9B) for *The Athletic*.
+- Minimal understanding of hockey "advanced stats" terminology. For a great primer, see Charlie O'Connor's [article](https://t.co/nUgxqcrj9B) for *The Athletic*.
 
 As I stated, all of the above are recommended but not required. I fully believe any keen hockey fan can make it through the tutorial. However, to gain an understanding of what's actually going on, all of the above are helpful! There are other projects out that will be more helpful for complete beginners.
 
@@ -75,7 +75,7 @@ In the header, there is a link to a google font (Open Sans), along with a little
 
 Finally, at the bottom of the file, I've included the javascript file we will primarily be coding in along with the d3.js library.
 
-```
+```html
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
 <script type="text/javascript" src="./js/main.js"></script>
 ```
@@ -91,6 +91,10 @@ For this tutorial, we'll be making a scatter plot showing each player's Corsi-fo
 - Team (Bubble Color)
 - Time on Ice (Bubble Size?)
 - Player Name (As sort of text annotation)
+
+As someone who has definitely not done this exact visualization before, this is a good idea of what our end result will be:
+
+@[Scatter Final]()
 
 Keep these in mind as we begin to code.
 
@@ -133,7 +137,7 @@ A primary part of data visualization is scaling your data coordinates into scree
 
 We initialize our scales as follows:
 
-```
+```javascript
 var xScale = d3.scaleLinear().range([padding.left, width-padding.right]);
 
 // In SVG coordinates (0,0) is the top left
@@ -143,7 +147,7 @@ var yScale = d3.scaleLinear().range([padding.top, height-padding.bottom]);
 
 We also need a scale to determine the size of our bubbles. Now, contrary to Python, D3 uses a *radius* attribute for determining circle size. Recall from elementary math that Area is proportional to the radius squared. In other words, a two times increase in radius will result in a four-times increase in area. **This is crucial to understand**, since we do not want to over-exaggerate the importance of our radius variable. For us, this is time-on-ice. To account for this, we use a *square root* scale.
 
-```
+```javascript
 // Area = PI*r^2
 var rScale = d3.scaleSqrt().range([5, 10]);
 ```
@@ -165,7 +169,7 @@ d3.csv(<file location>, <preprocess function>, <callback function>, ...)
 
 The second argument is a preprocessing function. Since our dataset is a CSV, all numbers will be loaded in as strings. In order to do any mathematical operations, we need to cast them to numbers. That's the purpose of this argument. This expects to receive a function that is then executed *line by line*. This is a bit tricky. Imagine that our CSV is really just a list of players, and each player has certain attributes like "Corsi For", "Time on Ice", etc... So we want our function to take in a *player object* with those qualities. Below is what we will use; it may take some time to conceptualize how it all works.
 
-We define a function (below our variables):
+Define our preprocessing function (below our variables):
 
 ```javascript
 function preProcess (player) {
@@ -178,4 +182,109 @@ function preProcess (player) {
 }
 ```
 
-Note: the `forEach` method is similar to python's `for element in arr:`. It's different in that it takes in a function to perform on each element. Javascript allows us to pass in *anonymous functions* (a function has no name). If that makes no sense to you, fret not. We'll get used to it. Carry on.
+Note: the `forEach` method is similar to python's `for element in arr:`. It's different in that it takes in a function to perform on each element. Javascript allows us to pass in *anonymous functions* (a function that has no name). If that makes no sense to you, fret not. You'll get used to it. Carry on.
+
+Now, let's actually call this d3.csv method. For future reference, most of our logic will be placed in here. However, we will often define helper functions outside of the inner scope. Below will show the bounds of the call, but expect to place logic within the brackets unless told otherwise.
+
+```javascript
+d3.csv("./data/data.csv", preProcess, function (data) {
+	// OUR LOGIC WILL GO IN HERE UNLESS STATED OTHERWISE
+});
+```
+
+In the end, our function will call the third function with all of the preprocessed data bundled into an array.
+
+Now that we have our data loaded in, let's finish off initializing our scales with appropriate domains.
+
+**An Aside:** If, at any point, you want to see the state of a variable, simple add `console.log(<variable>);` to your code, refresh the page, and open the developer console (command + shift + i for mac).
+
+#### Scales - Part 2
+Okay, we now have everything we need to finish off those pesky scales. To do this, we will use a couple built-in d3 methods: `d3.max`, `d3.min`, and `d3.extent`.
+
+Each of these has the same basic format, so we'll dive into an example with `d3.max`, knowing that it'll be identical for the others.
+
+The API for `d3.max` is as follows:
+```
+var maxValue = d3.max(<data>, <func>)
+```
+Where `<func>` is a function that will determine what exactly we want to find the max of. In other words, this function will be executed for on element in the array, and whatever is returned by the function is what it will find the max of. 
+
+Let's start with finding the min and max corsi-for values. In that case, we would find them like this:
+
+```javascript
+	// we want the maximum value of the corsi-for attribute
+	var maxCF = d3.max(data, function (player) {
+   		return player["CF"];
+  	});
+	// We do the same with our min, except calling with d3.min(...)
+	var minCF = d3.min(data, function (player) {
+		return player["CF"];
+	});
+```
+
+We assign similar variables for our max and min corsi-against.
+
+```javascript
+	var minCA = d3.min(data, function (player) {
+  		return player["CA"];
+  	});
+  
+  	var maxCA = d3.max(data, function (player) {
+    	return player["CA"];
+  	});
+```
+
+Now, let's take a step back and think about our (future) scatter plot. Even though the max  values for our CF and CA are not always equal, we would like our graph to be symmetric. In other words, our x and y axes should start and end at the same value. For this reason, we want both of our x and y scales to be mapped to the same domain.
+
+The minimum value of the interval should be `min(minCF, minCA)` and the max value should be `max(maxCF, maxCA)`. In JavaScript, we put:
+
+```javascript
+// Since we want graph to be symmetric
+var minVal = Math.min(minCF, minCA);
+var maxVal = Math.max(maxCF, maxCA);
+```
+
+However, maybe we don't want our axes to just go up to the max and min values. Let's add a bit of artificial "padding" to the scales above.
+
+```javascript
+// Since we want graph to be symmetric
+var minVal = Math.min(minCF, minCA) - 1;
+var maxVal = Math.max(maxCF, maxCA) + 1;
+```
+
+Now, our rScale is a bit more tricky. Looking at our data, we see that the times are given in the string form *mm:ss* (e.g. `'14:34'`). Unluckily for us, JavaScript cannot magically parse this and understand it as "14 minutes, 34 seconds". It also doesn't know how to compare to time strings like that. What it *does know* is how to compare two numbers (as we utilized earlier). We need to create a function to convert a TOI string to some number, either minutes or seconds. 
+
+Let's define a function *outside of* our `d3.csv` scope (i.e. brackets):
+
+```javascript
+// toi in form <string> mm:ss
+function timeInSeconds(toi) {
+	// we utilize built-in javascript string methods to parse.
+	var parsed = toi.split(":");
+	// parsed is an array of strings with elements [minutes, seconds]
+	var minutesInt = parseInt(parsed[0]);
+	var secondsInt = parseInt(parsed[1]);
+	return minutesInt*60 + secondsInt;
+}
+```
+We utilize some JS-magic here to accomplish our task. First, we split our string into segments separated by a colon. For example, `"12:34".split(":")` returns `["12", "34"]`. We then cast each to a number and do some simple arithmetic to return the equivalent number of seconds.
+
+Now we can finish off our `rScale`. Recall that third function I mentioned earlier? Don't scroll up, I'll remind you. It's `d3.extent`. This method is great, because it returns the min and max in one swoop. In a simple example `d3.extent([2,1,3])` will return `[1,3]`. Again, recall that d3 doesn't automatically know what we want to find the max and min of, so we tell it by passing in a function. We are now back into the scope of our d3.csv callback function.
+
+```javascript
+var minMaxRadius = d3.extent(data, function (player) {
+	// want to find the min and max of this number value
+	return timeInSeconds(player["TOI"]);
+});
+```
+Easy! Let's toss those numbers into our scales and move on. 
+
+```javascript 
+xScale.domain([minVal, maxVal]);
+yScale.domain([minVal, maxVal]);
+// remember, minMaxRadius is already in form [min, max]
+rScale.domain(minMaxRadius);
+```
+
+Sweet! Finished initializing the scales. While nothing is physically on the page yet, we are more than halfway there.
+

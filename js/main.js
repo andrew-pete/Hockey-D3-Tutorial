@@ -58,6 +58,11 @@ d3.csv("./data/data.csv", preProcess, function (data) {
   var maxCA = d3.max(data, function (player) {
     return player["CA"];
   });
+  
+  // Since we want graph to be symmetric
+  var minVal = Math.min(minCF, minCA) - 1;
+  var maxVal = Math.max(maxCF, maxCA) + 1;
+  
   // Another, more elegant way to find the min and max in just one call is using d3.extent, which returns an array: [min_value, max_value]
 
   // The rScale is a bit more difficult, since the format is "mm:ss", we need to do some extra work.
@@ -66,9 +71,7 @@ d3.csv("./data/data.csv", preProcess, function (data) {
     return timeInSeconds(player["TOI"]);
   });
   
-  // Since we want graph to be symmetric
-  var minVal = Math.min(minCF, minCA) - 1;
-  var maxVal = Math.max(maxCF, maxCA) + 1;
+
   // Now, let's update our scales to take in the appropraite domains...
   xScale.domain([minVal, maxVal]);
   yScale.domain([minVal, maxVal]);
