@@ -77,21 +77,21 @@ d3.csv("./data/data.csv", preProcess, function (data) {
   yScale.domain([minVal, maxVal]);
   rScale.domain(minMaxRadius);
   
-  renderLines(minVal, maxVal);
+  // renderLines(minVal, maxVal);
   // Let's append some circles! We can do this in two ways: iterative or functional. We will abstract them into separate functions
   renderCircles2(data);
-  renderText(data);
-  renderAxes();
+  // renderText(data);
+  // renderAxes();
   
-  svg.append("text")
-    .attr("class", "title")
-    .attr("font-size", "2em")
-    .attr("x", width/2)
-    .attr("y", 0)
-    .attr("dy", "2em")
-    .attr("text-anchor", "middle")
-    .text("OTT vs PHI - 2/24/2018");
-
+//   svg.append("text")
+//     .attr("class", "title")
+//     .attr("font-size", "2em")
+//     .attr("x", width/2)
+//     .attr("y", 0)
+//     .attr("dy", "2em")
+//     .attr("text-anchor", "middle")
+//     .text("OTT vs PHI - 2/24/2018");
+// 
 });
 
 // toi in form <string> mm:ss
