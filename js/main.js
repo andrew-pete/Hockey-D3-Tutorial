@@ -80,18 +80,18 @@ d3.csv("./data/data.csv", preProcess, function (data) {
   // renderLines(minVal, maxVal);
   // Let's append some circles! We can do this in two ways: iterative or functional. We will abstract them into separate functions
   renderCircles2(data);
-  // renderText(data);
-  // renderAxes();
+  renderText(data);
+  renderAxes();
   
-//   svg.append("text")
-//     .attr("class", "title")
-//     .attr("font-size", "2em")
-//     .attr("x", width/2)
-//     .attr("y", 0)
-//     .attr("dy", "2em")
-//     .attr("text-anchor", "middle")
-//     .text("OTT vs PHI - 2/24/2018");
-// 
+  // render title
+  svg.append("text")
+    .attr("class", "title")
+    .attr("font-size", "2em")
+    .attr("x", width/2)
+    .attr("y", 0)
+    .attr("dy", "2em")
+    .attr("text-anchor", "middle")
+    .text("OTT vs PHI - 2/24/2018");
 });
 
 // toi in form <string> mm:ss
@@ -143,24 +143,6 @@ function renderText(data) {
   var nameLabels = svg.selectAll("text.player")
     .data(data)
   
-  // we will use es6 function syntax to keep it short!
-  // nameLabels.enter().append("text")
-  //   .attr("class", "player")
-  //   .attr("opacity", 0.75)
-  //   .attr("text-anchor", "middle")
-  //   .attr("alignment-baseline", "hanging")
-  //   .attr("font-size", "0.75em")
-  //   .attr("x", (d) => xScale(d["CF"]))
-  //   .attr("y", (d) => yScale(d["CA"]))
-  //   .text(d => d["Player"])
-  //   .attr("dy", function(d){
-  //     // There's overlap. While we can automate this, it is not trivial, so we will manually change
-  //     // To fix, let's find all players that we want to separate. For each pair, we will put the text above rather than below.
-  //     return rScale(timeInSeconds(d["TOI"])) + 1);
-  //   } 
-  
-  // will use a javascript "hashset" for constant look-up time
-  
   var flippedPlayers = {
     "Dale Weise":1,
     "Oskar Lindblom":1,
@@ -171,12 +153,12 @@ function renderText(data) {
   
   nameLabels.enter().append("text")
     .attr("class", "player")
-    .attr("opacity", 0.75)
-    .attr("text-anchor", "middle")
-    .attr("alignment-baseline", (d) => (flippedPlayers[d.Player]) ? "baseline" : "hanging")
-    .attr("font-size", "0.75em")
     .attr("x", (d) => xScale(d["CF"]))
     .attr("y", (d) => yScale(d["CA"]))
+    .style("opacity", 0.75)
+    .style("text-anchor", "middle")
+    .style("alignment-baseline", (d) => (flippedPlayers[d.Player]) ? "baseline" : "hanging")
+    .style("font-size", "0.75em")
     .text(d => d["Player"])
     .attr("dy", function(d){
       var scalar = 1;
@@ -185,7 +167,6 @@ function renderText(data) {
       }
       return scalar * (rScale(timeInSeconds(d["TOI"])) + 1)
     });
-
 }
 
 function renderAxes() {

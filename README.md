@@ -325,7 +325,7 @@ Each of these teams has a matching nested object that contains HEX color strings
 Now, we have all we need to append the circles.
 
 ```javascript
-function renderCircles1(data) {
+function renderCircles(data) {
   // We go through every line in the data (equivalent to a player at a time) and append a circle to the svg
   data.forEach( function (player) {
     svg.append("circle")
@@ -522,7 +522,7 @@ function renderCircles(data) {
   });
 }
 ```
-And if you gave the second version of rendering circles, you'll have an additional functions that looks like:
+And if you tried the second version of rendering circles, you'll have an additional functions that looks like:
 
 ```javascript
 // 'Functional' data-join-enter-exit approach
@@ -547,9 +547,190 @@ function renderCirclesAlt(data) {
 
 If all went well, your page should now have a plot that looks like this:
 ![midpoint-plot](./assets/circles_plot.png)
-We've left a good amount of space for axes and a title, so let's get to those finishing touches.
+We've left a good amount of space for axes and a title, so let's get to those finishing touches. You're so close!
 ### Rendering Axes
+While the plot above looks nice, it closer resembles a piece of abstract art than a data visualization. Axes and labels give context to the numbers. 
+
+Luckily for us, D3 can construct an axis with tick marks using the scales we created earlier.
+
+Again, we'll create a helper function below our `renderCircles` one. Let's call it `renderAxes`. This function will render the x and y axes, along with providing a text label for each axis.
+
+In essence, we will need to create an axis using D3 methods and a scale. This axis defaults to the very top of the svg (for the x-axis) or the very left (for the y-axis), so we will need to move it according to the padding we pre-defined in our global variables. Similarly, we append a text element with a similar translation. We use basic arithmetic to determine its position and utilize `text-align: middle` to center it horizontally.
+
+You'll see that we use a "group" (`g`) that allows to apply a universal translation to all elements within the group. Since an axis is literally a collection of lines (axis, ticks) and text (numbers), the group element allows us to move all of that atomically.
+
+Below is the code to get that job done:
+
+```javascript
+function renderAxes() {
+  var axisY = d3.axisLeft(yScale);
+  var axisX = d3.axisTop(xScale);
+  
+  svg.append("g")
+    .attr("transform", "translate(" + padding.left + ",0)")
+    .call(axisY);
+  
+  svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", padding.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "-2em")
+        .style("text-anchor", "middle")
+        .text("Corsi Against (Unadjusted)");    
+  
+  svg.append("g")
+    .attr("transform", "translate(0," + padding.top + ")")
+    .call(axisX);
+    
+  svg.append("text")
+        .attr("y", padding.top)
+        .attr("x", width/2)
+        .attr("dy", "-2em")
+        .style("text-anchor", "middle")
+        .text("Corsi For (Unadjusted)");    
+}
+```
+
+We'll have to actually call this function from within our callback, below our `renderCircles()` call. Just add a `renderAxes()` call, and they should appear on the screen next reload.
+
+```javascript
+var axisY = d3.axisLeft(yScale);
+var axisX = d3.axisTop(xScale);
+```
+Here, we create our two axes via two built-in methods. These have not yet been appended to the svg, but live in the virtual space. In d3v4, we define which side of the axis we want our numbers via `axisTop, axisBottom, axisLeft, axisRight`. Since our axes will be on the top and left, it is natural to have the numbers appear above the axis and to the left of the axis, respectively. Feel free to substitute the converse to see the difference!
+
+```javascript
+svg.append("g")
+	.attr("transform", "translate(" + padding.left + ",0)")
+	.call(axisY);
+```
+Here, we actual create a group parent element, appending the y-axis via the `.call(axisY)`. Recall that this axis we default to hugging the left side of the svg. Since we have shifted all of our points by a factor of `padding.left`, we translate our y-axis to the right by `padding.left`.
+
+```javascript
+svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", padding.left)
+    .attr("x", 0 - (height / 2))
+    .attr("dy", "-2em")
+    .style("text-anchor", "middle")
+    .text("Corsi Against (Unadjusted)");    
+```
+Adding a y-axis label requires some quick maths. We rotate the text so that it is parallel to the axis, and set the "x" and "y" attributes on this flipped coordinate plan. `dy` is an attribute that is equivalent to "delta y", or "change in y." You could add this math to the "y" attribute, but I find it easier to read this way. Again, `"text-anchor":"middle"` simple centers the text horizontally, since the coordinate plane is rotated.
+
+Similar logic is applied for the x-axis. You'll notice the main difference is that the translation used `padding.top` and the text has no rotation (yay!).
+
+### Rendering A Title
+Now that you have experience with appending text for axis labels, the title is an absolute breeze. You can abstract this into another function with the name of your choice, or just put it at the bottom of your `d3.csv` callback. I chose the latter. If you prefer the former, just remember to actually call the function you define! Our code is fairly simple, and again I just use some arithmetic to determine a good `y` coordinate for the title. It's often a game of guess-and-check, so don't fret about not getting it right away!
+
+```javascript
+// render title
+svg.append("text")
+	.attr("class", "title")
+	.attr("font-size", "2em")
+	.attr("x", width/2)
+	.attr("y", 0)
+	.attr("dy", "2em")
+	.attr("text-anchor", "middle")
+	.text("OTT vs PHI - 2/24/2018");
+```
 
 ### Rendering Names
+
+So far, our visualization looks pretty dang good. However, the specificity of information is limited. We see that some Flyers' players did really well, others did quite awful. There's no way for a viewer to tell apart players on the same team, so we'll add text labels.
+
+In this section, we will again practice the `data-enter` method described in version 2 of `renderCircles`. Feel free to use a `for` or `forEach` loop to accomplish similar means.
+
+On an abstract level, we will append text in an almost identical manner to how we created the circles. The `(x,y)` coordinates will be determined the same, although we'll add a little buffer so the text does not overlap the circle. Recall from above that the `dy` attribute is perfectly suited for this. However, if we always want our text to be uniformly distanced from the edge of the circle, we will need to use our circle radius to determine the `dy` value.
+
+A naïve solution go as follows:
+
+```javascript
+function renderText(data) {
+  var nameLabels = svg.selectAll("text.player")
+    .data(data)
+  
+  nameLabels.enter().append("text")
+    .attr("class", "player")
+    .attr("x", (d) => xScale(d["CF"])) // using es6 function format
+    .attr("y", (d) => yScale(d["CA"]))
+    .style("opacity", 0.75)
+    .style("text-anchor", "middle")
+    .style("alignment-baseline", "hanging")
+    .style("font-size", "0.75em")
+    .text(d => d["Player"])
+    .attr("dy", (d) => rScale(timeInSeconds(d["TOI"])) + 1)
+  });
+}
+```
+
+When you reload with this code, your observant mind should notice a problem right away: look at all that text overlap! We have a few cases where circles are directly on top of each other, or are so close that the names still collide significantly.
+
+**How do we address this?**
+
+Well, on a universal level, this problem is quite difficult. It involves checking for collisions using bounded boxes, etc. etc... That's messy. For an introduction, let's just address this on a case-by-case basis. Note that our solution for this game **will not** work for every game.
+
+Since we have the data readily available, we can identify who the offending players are. For each pair of overlapping points, we just need to keep track of one of them. If we move *both*, we'll just have overlap at a different point. 
+
+The solution we'll implement goes as follows:
+
+- Identify colliding pairs
+- Select one player, record his name in some data structure
+- When appending our text elements, check if the player is in this pre-determined set.
+- In the case where he is, we'll flip his name to the other side of the circle.
+
+Below is a "hashmap" of player names that overlap with another. One could use an array to store names. Conceptually this makes sense, but the look-up time in an array is proportional to the length of the array, while the look-up time in a hashmap is constant. If you'd prefer to use an array, it'll likely have no performance difference since the set is small.
+
+Add this to the top of the function body:
+
+```javascript
+var flippedPlayers = {
+	"Dale Weise":1,
+	"Oskar Lindblom":1,
+	"Mark Borowiecki":1,
+	"Andrew MacDonald":1,
+	"Mark Stone": 1
+};
+```
+
+Since JavaScript does not have a set primitive, we use an object with player names as keys and 1 as the value. To check if a player is in the set, we just would ask `if (flippedPlayers[playerName]) {...}`. If the name is not in the set, it will not fulfill the predicate.
+
+Using this logic, let's flip some `dy` values. Edit your next bit of code to look like the following:
+
+```javascript
+nameLabels.enter().append("text")
+    .attr("class", "player")
+    .attr("x", (d) => xScale(d["CF"]))
+    .attr("y", (d) => yScale(d["CA"]))
+    .style("opacity", 0.75)
+    .style("text-anchor", "middle")
+    .style("alignment-baseline", (d) => (flippedPlayers[d.Player]) ? "baseline" : "hanging")
+    .style("font-size", "0.75em")
+    .text(d => d["Player"])
+    .attr("dy", function(d){
+      var scalar = 1;
+      if (flippedPlayers[d.Player]) {
+        scalar = -1;
+      }
+      return scalar * (rScale(timeInSeconds(d["TOI"])) + 1)
+	 });
+```
+
+We altered two things. First, we changed the "alignment-baseline" (vertical alignment) so that it responds to whether a player is on the top or bottom.
+
+The more notable change occurs in the function for determining `dy`. In essence, if the player is in the set of players to be flipped, we set the change in y to be the negated value of what it normally would be.
+
+With these changes, we no have a pretty good looking plot.
+
+![Current plot, no context lines](./assets/plot_no_context.png)
+
+Oscar Lindblom and Mark Stone still overlap, but it's usable. Proper rookie treatment, I suppose.
+
+## Optional 'Advanced' Additions
+At this point, you have a scatter plot that looks nice and is usable! If you feel like you have learned enough to conquer the world on your own, go for it! *However*, there are a few things that we can add to make this plot **even better**! Part of this tutorial is to train yourself to spot small errors (name overlap) or areas of improvement. Below is are a few basic additions that can turn our *good* graph into a *great* graph:
+
+- *Size Key*: what time-on-ice relates to what circle size?
+- *Team Key*: specify which team is which color. This isn't obvious for many viewers!
+- *Context Lines*: add Corsi-for % lines so the viewer can more easily judge how their favorite (or least favorite) players did.
+- *Highlighting outliers*: constructing a narrative and drawing the viewer's eye to a set of players.
 
 ### Rendering Context (CF%) Lines 
