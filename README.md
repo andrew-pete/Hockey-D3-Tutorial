@@ -1,6 +1,10 @@
 # Hockey Data Visualization with D3.js
 #### Lesson 1/3
 ## Introduction
+
+#### Note from the Author
+This is the **first** of a **three-part** "D3.js and Hockey Analytics" series. If you feel like you learned a lot, stick around for more exciting tutorials in the future!
+___
 If you're the type of person who has wandered to a stranger's github page, it is likely you have occasionally stumbled upon beautiful data vizualizations all throughout the internet. It's possible you yourself have some experience making plots in R, Python, or Matlab. All of those languages have packages that make it extremely easy to visualize large amounts of data. These packages really are truly amazing, and often suffice for a _majority_ of projects. However, as you gained experience, perhaps you've realized how difficult it is to truly customize these visualizations. Perhaps you've even spent hours laboring to get integrate these plots with a website or app, only to settle for a low-quality screenshot of it. Maybe, in the back of your mind, you've wondered how the engineers at [The New York Times](https://www.nytimes.com/interactive/2017/12/21/us/2017-year-in-graphics.html) and [FiveThirtyEight](https://fivethirtyeight.com/features/the-ridiculousness-of-conference-tournament-locations-in-6-maps/) consistently make gorgeous visualizations that appear beyond the scope of ggplot or matplotlib. 
 
 Far be it from me to come here and to tell you to divorce your dearest visualization library. I will tell that there exists another, however, that can satisfy your unquenched desires for beautiful, customized visualizations. Like a siren, one library has long been singing your name, waiting for you to turn towards its shores. Unlike the sirens, it will not lead you towards inevitable death, but expand your life into new horizons.
@@ -219,11 +223,11 @@ Let's start with finding the min and max corsi-for values. In that case, we woul
 ```javascript
 // we want the maximum value of the corsi-for attribute
 var maxCF = d3.max(data, function (player) {
-	return player["CF"];
+  return player["CF"];
 });
 // We do the same with our min, except calling with d3.min(...)
 var minCF = d3.min(data, function (player) {
-	return player["CF"];
+  return player["CF"];
 });
 ```
 
@@ -231,11 +235,11 @@ We assign similar variables for our max and min corsi-against.
 
 ```javascript
 var minCA = d3.min(data, function (player) {
-	return player["CA"];
+  return player["CA"];
 });
   
 var maxCA = d3.max(data, function (player) {
-	return player["CA"];
+  return player["CA"];
 });
 ```
 
@@ -264,12 +268,12 @@ Let's define a function *outside of* our `d3.csv` scope (i.e. brackets):
 ```javascript
 // toi in form <string> mm:ss
 function timeInSeconds(toi) {
-	// we utilize built-in javascript string methods to parse.
-	var parsed = toi.split(":");
-	// parsed is an array of strings with elements [minutes, seconds]
-	var minutesInt = parseInt(parsed[0]);
-	var secondsInt = parseInt(parsed[1]);
-	return minutesInt*60 + secondsInt;
+  // we utilize built-in javascript string methods to parse.
+  var parsed = toi.split(":");
+  // parsed is an array of strings with elements [minutes, seconds]
+  var minutesInt = parseInt(parsed[0]);
+  var secondsInt = parseInt(parsed[1]);
+  return minutesInt*60 + secondsInt;
 }
 ```
 We utilize some JS-magic here to accomplish our task. First, we split our string into segments separated by a colon. For example, `"12:34".split(":")` returns `["12", "34"]`. We then cast each to a number and do some simple arithmetic to return the equivalent number of seconds.
@@ -280,8 +284,8 @@ We are now back into the scope of our d3.csv callback function.
 
 ```javascript
 var minMaxRadius = d3.extent(data, function (player) {
-	// want to find the min and max of this number value
-	return timeInSeconds(player["TOI"]);
+  // want to find the min and max of this number value
+  return timeInSeconds(player["TOI"]);
 });
 ```
 Easy! Let's toss those numbers into our scales and move on. 
@@ -329,14 +333,14 @@ function renderCircles(data) {
   // We go through every line in the data (equivalent to a player at a time) and append a circle to the svg
   data.forEach( function (player) {
     svg.append("circle")
-      .attr("id", player.Player.split(" ").join("_")) // This will get create an _ sepearted name. No spaces in class names!
+      .attr("class", "player " + player.Player.split(" ").join("_")) // This will get create an _ sepearted name. No spaces in class names!
       .attr("cx", xScale(player["CF"])) // x coordinated will be the scaled corsi-for
       .attr("cy", yScale(player["CA"]))
       .attr("r", rScale(timeInSeconds(player["TOI"])))
-      .attr("fill", colors[player.Team].fill)
-      .attr("stroke", colors[player.Team].stroke)
-      .attr("opacity", 0.6)
-      .attr("stroke-width", 1);
+      .style("fill", colors[player.Team].fill)
+      .style("stroke", colors[player.Team].stroke)
+      .style("opacity", 0.6)
+      .style("stroke-width", 1);
   });
 }
 ```
@@ -345,7 +349,7 @@ Okay, there's a lot going on here, so let's go line-by-line dissecting exactly w
 
 `svg.append("circle")` does exactly what it sounds like it does when read out in plain English. We are appending a circle element to our svg. However, the circle doesn't know how big it should be, where it needs to go, or what color it should be. We need to specify each attribute, which is exactly what we will do. Notice that we do not end the line with a semi-color (`;`). This is intentional, as we do not want to close out the evaluation too early.
 
-`.attr("id", player.Player.split(" ").join("_"))` sets the unique id of the circle to be an under-bar separated string of the player's name. This can be utilized for future reference or interactivity. In general, it is good practice to add unique ids to your svg elements. Since our name attribute is stored under the "Player" column, we select that column. Id's cannot have spaces in them, so we must change the name to be instead separated by something else. I've chosen the `_` character. Notice that we split the string on space, separating the first and last names, then rejoin that array into a string but this time using `_` as a connector between the elements.
+`.attr("class", player.Player.split(" ").join("_"))` sets the unique id of the circle to be an under-bar separated string of the player's name. This can be utilized for future reference or interactivity. In general, it is good practice to add unique ids to your svg elements. Since our name attribute is stored under the "Player" column, we select that column. Id's cannot have spaces in them, so we must change the name to be instead separated by something else. I've chosen the `_` character. Notice that we split the string on space, separating the first and last names, then rejoin that array into a string but this time using `_` as a connector between the elements.
 
 ```javascript
 .attr("cx", xScale(player["CF"]))
@@ -359,10 +363,10 @@ Next, we set the radius of the circle using the TOI attribute. Recall that our s
 We utilize the `colors` variable we set earlier to determine the stroke and fill for our circle. Recall that the `Team` column stores either "PHI" or "OTT", so we can retrieve the appropriate color if we know that value. 
 
 ```javascript
-.attr("fill", colors[player.Team].fill)
-.attr("stroke", colors[player.Team].stroke)
-.attr("opacity", 0.6)
-.attr("stroke-width", 1);
+.style("fill", colors[player.Team].fill)
+.style("stroke", colors[player.Team].stroke)
+.style("opacity", 0.6)
+.style("stroke-width", 1);
 ```
 
 Our last two lines are just cosmetic changes. When dealing with potentially overlapping data, one should always set opacity to something below 1. This is common practice for most visualizations you see on data journalism sites, so I like to stick to it.
@@ -393,14 +397,14 @@ function renderCircles(data) {
   circles.exit().remove(); // in the case where this function is called twice, remove previous circles 
   
   circles.enter().append("circle") // appends a circle for every row in data
-    .attr("opacity", 0.6) // attributes not associated with data
-    .attr("stroke-width", 1)
-    .attr("id", function(d) {return d.Player.split(" ").join("_")})
+    .style("opacity", 0.6) // attributes not associated with data
+    .style("stroke-width", 1)
+    .attr("class", function(d) {return "player " + d.Player.split(" ").join("_")}) // yields classes .player.<playerName>
     .attr("cx", function(d) {return xScale(d["CF"])})
     .attr("cy", function(d) {return yScale(d["CA"])})
     .attr("r", function(d) {return rScale(timeInSeconds(d["TOI"]))})
-    .attr("stroke", (d) => colors[d.Team].stroke)
-    .attr("fill", (d) => colors[d.Team].fill);  
+    .style("stroke", (d) => colors[d.Team].stroke)
+    .style("fill", (d) => colors[d.Team].fill);  
 }
 ```
 I've tried to comment the data in such a way to make it easily understandable, but I will again try to dissect this approach.
@@ -511,14 +515,14 @@ function renderCircles(data) {
   // We go through every line in the data (equivalent to a player at a time) and append a circle to the svg
   data.forEach( function (player) {
     svg.append("circle")
-      .attr("id", player.Player.split(" ").join("_")) // This will get create an _ sepearted name. No spaces in class names!
+      .attr("class", "player " + player.Player.split(" ").join("_")) // This will get create an _ sepearted name. No spaces in class names!
       .attr("cx", xScale(player["CF"])) // x coordinated will be the scaled corsi-for
       .attr("cy", yScale(player["CA"]))
       .attr("r", rScale(timeInSeconds(player["TOI"])))
-      .attr("fill", colors[player.Team].fill)
-      .attr("stroke", colors[player.Team].stroke)
-      .attr("opacity", 0.6)
-      .attr("stroke-width", 1);
+      .style("fill", colors[player.Team].fill)
+      .style("stroke", colors[player.Team].stroke)
+      .style("opacity", 0.6)
+      .style("stroke-width", 1);
   });
 }
 ```
@@ -534,14 +538,14 @@ function renderCirclesAlt(data) {
   circles.exit().remove(); // in the case where this function is called twice, remove previous circles 
   
   circles.enter().append("circle") // appends a circle for every row in data
-    .attr("opacity", 0.6) // attributes not associated with data
-    .attr("stroke-width", 1)
-    .attr("id", function(d) {return d.Player.split(" ").join("_")})
+    .style("opacity", 0.6) // attributes not associated with data
+    .style("stroke-width", 1)
+    .attr("class", function(d) {return "player " + d.Player.split(" ").join("_")})
     .attr("cx", function(d) {return xScale(d["CF"])})
     .attr("cy", function(d) {return yScale(d["CA"])})
     .attr("r", function(d) {return rScale(timeInSeconds(d["TOI"]))})
-    .attr("stroke", (d) => colors[d.Team].stroke) // Using ES6 functions for readability purposes. Also it's good to know :)
-    .attr("fill", (d) => colors[d.Team].fill);  
+    .style("stroke", (d) => colors[d.Team].stroke) // Using ES6 functions for readability purposes. Also it's good to know :)
+    .style("fill", (d) => colors[d.Team].fill);  
 }
 ```
 
@@ -571,23 +575,23 @@ function renderAxes() {
     .call(axisY);
   
   svg.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", padding.left)
-        .attr("x", 0 - (height / 2))
-        .attr("dy", "-2em")
-        .style("text-anchor", "middle")
-        .text("Corsi Against (Unadjusted)");    
+    .attr("transform", "rotate(-90)")
+    .attr("y", padding.left)
+    .attr("x", 0 - (height / 2))
+    .attr("dy", "-2em")
+    .style("text-anchor", "middle")
+    .text("Corsi Against (Unadjusted)");    
   
   svg.append("g")
     .attr("transform", "translate(0," + padding.top + ")")
     .call(axisX);
     
   svg.append("text")
-        .attr("y", padding.top)
-        .attr("x", width/2)
-        .attr("dy", "-2em")
-        .style("text-anchor", "middle")
-        .text("Corsi For (Unadjusted)");    
+    .attr("y", padding.top)
+    .attr("x", width/2)
+    .attr("dy", "-2em")
+    .style("text-anchor", "middle")
+    .text("Corsi For (Unadjusted)");    
 }
 ```
 
@@ -601,19 +605,19 @@ Here, we create our two axes via two built-in methods. These have not yet been a
 
 ```javascript
 svg.append("g")
-	.attr("transform", "translate(" + padding.left + ",0)")
-	.call(axisY);
+  .attr("transform", "translate(" + padding.left + ",0)")
+  .call(axisY);
 ```
 Here, we actual create a group parent element, appending the y-axis via the `.call(axisY)`. Recall that this axis we default to hugging the left side of the svg. Since we have shifted all of our points by a factor of `padding.left`, we translate our y-axis to the right by `padding.left`.
 
 ```javascript
 svg.append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("y", padding.left)
-    .attr("x", 0 - (height / 2))
-    .attr("dy", "-2em")
-    .style("text-anchor", "middle")
-    .text("Corsi Against (Unadjusted)");    
+  .attr("transform", "rotate(-90)")
+  .attr("y", padding.left)
+  .attr("x", 0 - (height / 2))
+  .attr("dy", "-2em")
+  .style("text-anchor", "middle")
+  .text("Corsi Against (Unadjusted)");    
 ```
 Adding a y-axis label requires some quick maths. We rotate the text so that it is parallel to the axis, and set the "x" and "y" attributes on this flipped coordinate plan. `dy` is an attribute that is equivalent to "delta y", or "change in y." You could add this math to the "y" attribute, but I find it easier to read this way. Again, `"text-anchor":"middle"` simple centers the text horizontally, since the coordinate plane is rotated.
 
@@ -625,13 +629,13 @@ Now that you have experience with appending text for axis labels, the title is a
 ```javascript
 // render title
 svg.append("text")
-	.attr("class", "title")
-	.attr("font-size", "2em")
-	.attr("x", width/2)
-	.attr("y", 0)
-	.attr("dy", "2em")
-	.attr("text-anchor", "middle")
-	.text("OTT vs PHI - 2/24/2018");
+  .attr("class", "title")
+  .style("font-size", "2em")
+  .attr("x", width/2)
+  .attr("y", 0)
+  .attr("dy", "2em")
+  .style("text-anchor", "middle")
+  .text("OTT vs PHI - 2/24/2018");
 ```
 
 ### Rendering Names
@@ -650,7 +654,7 @@ function renderText(data) {
     .data(data)
   
   nameLabels.enter().append("text")
-    .attr("class", "player")
+    .attr("class", (d) => "player " + d.Player.split(" ").join("_"))
     .attr("x", (d) => xScale(d["CF"])) // using es6 function format
     .attr("y", (d) => yScale(d["CA"]))
     .style("opacity", 0.75)
@@ -698,7 +702,7 @@ Using this logic, let's flip some `dy` values. Edit your next bit of code to loo
 
 ```javascript
 nameLabels.enter().append("text")
-    .attr("class", "player")
+    .attr("class", (d) => "player " + d.Player.split(" ").join("_"))
     .attr("x", (d) => xScale(d["CF"]))
     .attr("y", (d) => yScale(d["CA"]))
     .style("opacity", 0.75)
@@ -733,4 +737,284 @@ At this point, you have a scatter plot that looks nice and is usable! If you fee
 - *Context Lines*: add Corsi-for % lines so the viewer can more easily judge how their favorite (or least favorite) players did.
 - *Highlighting outliers*: constructing a narrative and drawing the viewer's eye to a set of players.
 
+For the sake of time and space, there will be less line-by-line analysis. At this point, most of the work that needs to be done is arithmetic and geometry. Hopefully you are getting comfortable navigating D3. 
+
+If you have any questions or comments on the following sections, feel free to reach out by email or [Twitter](https://twitter.com/AndrewLPeterson). 
+### Creating Circle-Size and Team Keys
+While team colors may be obvious to hardcore fans, you should make no assumptions as to who is looking at your visualization. The last thing we want to do is arrogantly create a visualization so "high-level" that no one understands it. For this reason, keys are extremely useful.
+
+First, we need to add some more padding on our right side, to give space for our key. Modify our global padding variable to do that.
+
+```javascript
+var padding = {
+  top: 140,
+  bottom: 40,
+  left: 60,
+  right: 140
+};
+```
+
+Notice that our code is dynamic enough to adjust to these changes without significant visual impact! When possible, a generic solution is always best (rather than hard-coding values).
+
+Next, we'll create a helper function to aid our cause. Near the bottom of your document, add `function renderKey() {...}`.
+
+Let's define some variables that will determine the shape and position of our key.
+
+```javascript
+function renderKey() {
+  var keyHeight = 120; // Height of key
+  var keyPadding = 40; // Separation from scatter plot and right svg border
+    
+  var startX = width - padding.right + keyPadding;
+  var startY = height - padding.bottom - keyHeight; 
+  var dy = 30; // Separation between team circles
+  var circleRadius = 10; // Default team circle radius
+  ...
+}
+```
+
+Similar to our axis conversation, we will use a group element to perform universal transformations. This will be a common thread, as it is easier to treat shapes as originating from the origin, then moving them all with one calculation. The other solution would be to work the svg coordinates out whenever needed. This works, but makes your code difficult to parse. In general, if you have an additive term in every one of your attributes, it's best to *factor it out* and apply a translation using that term.
+
+We do just that, creating a new group element, translating it over using our `startX` and `startY` terms we calculated above.
+
+```javascript
+var teamKey = svg.append("g")
+    .attr("transform", "translate(" + startX + "," + startY + ")");
+```
+
+Now, remember we have our team variables stored in the `colors` object.  We will loop through the keys of the object, appending a circle juxtaposed with the team abbreviation in a text element.
+
+```javascript
+Object.keys(colors).forEach( (team, i) => {
+  teamKey.append("circle")
+    .attr("cx", 0)
+    .attr("cy", i*dy)
+    .attr("r", circleRadius)
+    .style("fill", colors[team].fill)
+    .style("stroke", colors[team].stroke)
+    .style("opacity", 0.7)
+    .style("stroke-width", 1);
+  
+  teamKey.append("text")
+    .attr("x", circleRadius)
+    .attr("dx", 10)
+    .attr("y", i*dy)
+    .style("alignment-baseline", "middle")
+    .text(team);
+});
+```
+
+Next, we'll create a key for our radius-scale. To do this, pick two times that vary enough so that their size differences will be noticable. I've chosen "10:00" and "18:00", and store them in an array: `var times = ["10:00", "18:00"];`
+
+There are a few ways to show size keys. I'm partial to concentric circles that intersect at the bottom of the circles. I admit that the inspiration for this is from fivethirtyeight. Since the circles don't share a center, extra math is required to calculate the proper center position for each circle. That math is shown below. Notice how we again utilize a group transformation, like above.
+
+```javascript
+// Circle key
+var times = ["10:00", "18:00"];
+var cyMax = 0, cx = 0, rMax = rScale(timeInSeconds(times[times.length-1])); // assumes last element is largest time
+
+// apply a universal group translation
+var timeKey = svg.append("g")
+  .attr("transform", "translate(" + startX+ "," + (startY + keyHeight - 40) +")");
+
+// Creates a line across the bottom. Not necessary, but it looks nice!
+timeKey.append("line")
+  .attr("x1", cx - rMax)
+  .attr("x2", cx + rMax)
+  .attr("y1", cyMax + rMax)
+  .attr("y2", cyMax + rMax)
+  .style("stroke", "rgba(0,0,0,0.4)");
+
+// Loop through each time
+times.forEach( (toi, i) => { // the i variable is index in array
+  // convert to seconds
+  var r = rScale(timeInSeconds(toi));
+  var cy = cyMax + (rMax - r);
+
+  timeKey.append("circle")
+    .attr("cx", cx)
+    .attr("cy", cy)
+    .attr("r", r)
+    .style("stroke", "rgba(0,0,0,0.4)")
+    .style("stroke-width", 1)
+    .style("fill", "none");
+  
+  timeKey.append("text")
+    .attr("x", cx)
+    .attr("y", cy)
+    .attr("dx", rMax + 2)
+    .attr("dy", i*(-6))
+    .style("alignment-baseline", "middle")
+    .style("font-size", "0.6em")
+    .text(toi + " (5v5)");
+});
+```
+
+Now you can close out your function and call it from the callback body. The end result will be a pleasant key in the bottom right of your plot:
+
+![Viz Key](./assets/key.png)
+
+A lot of things I wrote are completely cosmetic and thus totally optional. Concentric circles sharing a center works perfectly fine too! Do whatever looks most natural for **you**.
+
 ### Rendering Context (CF%) Lines 
+
+In order to gauge a player's performance using our graph, one has to scan the x and y axes, then perform some mental math to see how good (above 50% shots for?) or bad (below 50% shots for) that player did. We can, and should, remove that burden!
+
+Compare the plot below with your current plot, and you'll notice how a few context lines can alleviate a lot of uncertainty.
+
+![Plot with context lines](./assets/plot_with_context.png) 
+
+Notice how much easier it is now to gauge a player's performance. It is multitudes easier to interpret an interval (i.e. somewhere between 50%-60%) than exact x,y coordinates.
+
+A fair warning, calculating the endpoints for these lines *is not fun*. For one, we want the lines to stay within the confines of our plot and not overextend into our margins. This is difficult, since our padding is completely man-made. Like typical loud males, they don't care or notice if they are taking up too much space.
+
+Say we want to plot a line with proportion = *p*. To find the line that describes this, we use the equation: x/(x+y) = p. 
+
+And thus we can solve for: 
+
+- x = p/(1-p)*y
+- y = (1-p)/p*x
+
+For p > 0.5 (> 50% CF), we can tell from the graph above that it will go all the way until the max x value (24 in our case), so we can use that value to solve for the y endpoint.
+
+Conversely, for p < 0.5, our line is bound by the max y value (24 as well), so we use the first equation to solve for the respective x value.
+
+Below is code that does just that, which then uses the x and y scales to determine the actual coordinates for the line. After each line is drawn, a text element is added to the end with the respective CF%.
+
+```javascript
+function renderLines(min, max) {
+  // Let p be CF%/100. Can solve and get CF = p*CA/(1-p), or CA = CF*(1-p)/p
+  var midWayLine = {x1: min, y1: min, x2: max, y2: max, text: "50%"};
+  var sixtyPercent = {x1: 3*min/2, y1: min, x2: max, y2: max*2/3, text: "60%"};
+  var fourtyPercent = {x1: min, y1: 3/2*min, x2: max*2/3, y2: max, text: "40%"};
+  var seventyPercent = {x1: 7/3*min, y1: min, x2: max, y2: max*3/7, text: "70%"};
+  var thirtyPercent = {x1: min, y1: 7/3*min, x2: 3/7*max, y2: max, text: "30%"};
+
+
+  var lines = [midWayLine, sixtyPercent, fourtyPercent, seventyPercent, thirtyPercent];
+  
+  var lineGroup = svg.append("g")
+    .attr("class", "line-group");
+  
+  lines.forEach(function (coords) {
+    lineGroup.append("line")
+      .style("stroke", "#777")
+      .style("stroke-width", "1")
+      .style("opacity", 0.3)
+      .attr("x1", xScale(coords.x1))
+      .attr("y1", yScale(coords.y1))
+      .attr("x2", xScale(coords.x2))
+      .attr("y2", yScale(coords.y2));
+      
+    lineGroup.append("text")
+      .text(coords.text)
+      .attr("x", xScale(coords.x2))
+      .attr("y", yScale(coords.y2))
+      .attr("dy", 10)
+      .style("alignment-baseline", "top")
+      .style("text-anchor", "middle")
+      .style("font-size", "12")
+      .style("opacity", 0.75);
+  });
+}
+```
+At the very least, my minor in Mathematics gave me enough insight to draw some lines properly.
+
+### Constructing a Narrative - Highlighting Outliers
+At this point, our plot is ready to be Tweeted out. It's finished its job, and it has finished in style.
+
+However, what if our goal was not to give a high-level view of the game data? 
+
+#### Warning: a tad more JS experience recommended for this
+
+What if we wanted to use this data to support a narrative? Look again at the plot. Does the disturbingly large separation of the Flyers'first and fourth lines not seem strange? Perhaps you're a data journalist, and you want to use this plot to support your newest installment of ripping into the Flyers' depth players. 
+
+If you present the plot as is, it is difficult to sort through the noise. We have a lot of circles on this plot. Most don't factor into our narrative. However, we wouldn't want to remove them completely, since they do provide context.
+
+A common tactic for drawing the eye is changing the transparency or opacity of data points. If we make all data except for a few outliers nearly transparent, the viewer's eye will instantly be drawn to the player's that we want them to be. Yes, it is some sly manipulation, but *at least it's not data manipulation!*
+
+#### Choosing the Outliers
+For this final part, let's choose to highlight the following players: Claude Giroux, Travis Konecny, Sean Couturier (Good!) vs. Jori Lehtera, Val Filppula, and Dale Weise (Bad!).
+
+Our goal is to draw the viewer's eye, so we will make everything else have a lower opacity than this group. Perhaps, along with this contrast we will outline the two distinct groups, like so:
+
+![Outliers](./assets/outliers.png)
+
+The code to do this is suprisingly succinct. It could be much more robust if we created an algorithm that found the centroid of each cluster then drew an ellipse according to variance in the x and y... Maybe another day! Instead, we can just use the physical plot axes and our scales to determine appropriate ellipse attributes.
+
+Our gameplan looks something like this:
+
+1. Pass in a list of distinct sets of players
+2. Select all circles and text elements that *aren't* in these sets
+3. Give them low opacity.
+4. Create two ellipses (assuming number of sets is 2) that encircle each set, leading the viewer understand the outliers as two distinct groups.
+
+Now that it's written out, let's put it into code. We utilize the fact that we gave each text element and circle a class name associated with the players name.
+
+```javascript
+// sets is an array of arrays, which include player names
+// e.g. [["Sean Couturier", "Claude Giroux"], ["Jori Lehtera", "Dale Weise"]]
+function highlightOutliers(playerSets) {
+  // recall we gave all circles class names according to their names
+  var outlierClasses = [];
+  var flattenedArray = [].concat.apply([], playerSets); // gives us an array of names
+  
+  flattenedArray.forEach( (playerName) => {
+    var className = playerName.split(" ").join("_");
+    outlierClasses.push("." + className); // add class to list
+  });
+  
+  // We're creating a big selector string to grab all data points that aren't important
+  var stringList = outlierClasses.map(className => ":not(" + className + ")");
+  var selectorBoringCircles = "circle.player" + stringList.join("");
+  var selectorBoringText = "text.player" + stringList.join("");
+  
+  var boringOpacity = 0.15;
+  // Loop through all the boring circles and 
+  svg.selectAll(selectorBoringCircles)
+    .style("opacity", boringOpacity);
+  
+  svg.selectAll(selectorBoringText)
+    .style("opacity", boringOpacity);
+    
+  // Let's outline the two groups!
+  svg.append("ellipse")
+    .attr("cx", xScale(20))
+    .attr("cy", yScale(7.8))
+    .attr("rx", xScale(20) - xScale(16)) // DIFFERENT than xScale(4)
+    .attr("ry", yScale(7.8) - yScale(6))
+    .style("stroke-dasharray", "5, 5")
+    .style("stroke", "rgba(0,0,0,0.5)")
+    .style("stroke-width", 1)
+    .style("fill", "none");
+  
+  svg.append("ellipse")
+    .attr("cx", xScale(4.5))
+    .attr("cy", yScale(12))
+    .attr("rx", xScale(4.5) - xScale(3.2)) 
+    .attr("ry", yScale(12) - yScale(10))
+    .style("stroke-dasharray", "5, 5") // dotted ellipse outline
+    .style("stroke", "rgba(0,0,0,0.5)")
+    .style("stroke-width", 1)
+    .style("fill", "none");
+}
+```
+
+Now, all you need to do is call something like this somewhere in your code.
+
+
+```javascript
+var outliers = [["Sean Couturier", "Claude Giroux", "Travis Konecny"], ["Jori Lehtera", "Dale Weise", "Valtteri Filppula"]];
+highlightOutliers(outliers);
+```
+
+Boom, we're done!
+
+## Conclusion
+I hope through this immersive experience that you have gained a tremendous amount of new knowledge and appreciation for good data viz. Even a scatter plot takes a lot of work. However, I also trust that you see how uniquely versatile D3 is. 
+
+The learning curve is high, but almost nothing is impossible with it. I would have no idea how to conquer the "outlier problem" in any language other than JavaScript. 
+
+Overall, a large chunk of this code is reusable. That's the key in writing generic, universal code. Not all of it is universal (keep in mind column labels in your data file), but the process is *almost always* the same.
+
+Thanks for joining me for this marevlous virtual adventure. May you create many a pretty visualization in the mean-time. Until then!
