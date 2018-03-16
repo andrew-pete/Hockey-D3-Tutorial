@@ -4,6 +4,8 @@
 
 #### Note from the Author
 This is the **first** of a **three-part** "D3.js and Hockey Analytics" series. If you feel like you learned a lot, stick around for more exciting tutorials in the future!
+
+To contact me personally with *any* comments or questions, shoot me an email at alp98@cornell.edu or DM me on Twitter [@AndrewLPeterson](https://twitter.com/AndrewLPeterson).
 ___
 If you're the type of person who has wandered to a stranger's github page, it is likely you have occasionally stumbled upon beautiful data vizualizations all throughout the internet. It's possible you yourself have some experience making plots in R, Python, or Matlab. All of those languages have packages that make it extremely easy to visualize large amounts of data. These packages really are truly amazing, and often suffice for a _majority_ of projects. However, as you gained experience, perhaps you've realized how difficult it is to truly customize these visualizations. Perhaps you've even spent hours laboring to get integrate these plots with a website or app, only to settle for a low-quality screenshot of it. Maybe, in the back of your mind, you've wondered how the engineers at [The New York Times](https://www.nytimes.com/interactive/2017/12/21/us/2017-year-in-graphics.html) and [FiveThirtyEight](https://fivethirtyeight.com/features/the-ridiculousness-of-conference-tournament-locations-in-6-maps/) consistently make gorgeous visualizations that appear beyond the scope of ggplot or matplotlib. 
 
