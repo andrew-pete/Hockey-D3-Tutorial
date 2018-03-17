@@ -14,7 +14,7 @@ Far be it from me to come here and to tell you to divorce your dearest visualiza
 ### Purpose
 
 #### Is D3.js right for me?
-Now, it is important to not get ahead of ourselves. D3 is not for the faint of heart. If your project is primarily research-oriented, and you are simply using visualizations as a supplement (testing or the like), perhaps D3 is not best for that project. It comes with no built-in plots. You are far better off going to your room and crying whilst listening to Sufjan Stevens than trying to build a 3D scatter plotto analyze your spectral clustering algorithm with D3 .
+Now, it is important to not get ahead of ourselves. D3 is not for the faint of heart. If your project is primarily research-oriented, and you are simply using visualizations as a supplement (testing or the like), perhaps D3 is not best for that project. It comes with no built-in plots. You are far better off going to your room and crying whilst listening to Sufjan Stevens than trying to build a 3D scatter plot to analyze your spectral clustering with D3 .
 
 However, if you want a single _robust_ framework that can be used to build completely customizable geographic visualizations, scatter plots, networks, etc... AND be easily integrated with any website or app, D3 may be the way to go.
 
@@ -929,7 +929,7 @@ However, what if our goal was not to give a high-level view of the game data?
 
 #### Warning: a tad more JS experience recommended for this
 
-What if we wanted to use this data to support a narrative? Look again at the plot. Does the disturbingly large separation of the Flyers'first and fourth lines not seem strange? Perhaps you're a data journalist, and you want to use this plot to support your newest installment of ripping into the Flyers' depth players. 
+What if we wanted to use this data to support a narrative? Look again at the plot. Does the disturbingly large separation of the Flyers' first and fourth lines not seem strange? Perhaps you're a data journalist, and you want to use this plot to support your newest installment of ripping into the Flyers' depth players. 
 
 If you present the plot as is, it is difficult to sort through the noise. We have a lot of circles on this plot. Most don't factor into our narrative. However, we wouldn't want to remove them completely, since they do provide context.
 
@@ -1015,7 +1015,7 @@ Boom, we're done!
 ## Conclusion
 I hope through this immersive experience that you have gained a tremendous amount of new knowledge and appreciation for good data viz. Even a scatter plot takes a lot of work. However, I also trust that you see how uniquely versatile D3 is. 
 
-The learning curve is high, but almost nothing is impossible with it. I would have no idea how to conquer the "outlier problem" in any language other than JavaScript. 
+The learning curve is high, but almost nothing is impossible with it. I would have no idea how to easily conquer the "outlier problem" in any language other than JavaScript (take that with a grain of salt, it's my primary language).
 
 Overall, a large chunk of this code is reusable. That's the key in writing generic, universal code. Not all of it is universal (keep in mind column labels in your data file), but the process is *almost always* the same.
 
