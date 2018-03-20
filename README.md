@@ -217,9 +217,11 @@ Okay, we now have everything we need to finish off those pesky scales. To do thi
 Each of these has the same basic format, so we'll dive into an example with `d3.max`, knowing that it'll be identical for the others.
 
 The API for `d3.max` is as follows:
-```
+
+```javascript
 var maxValue = d3.max(<data>, <func>)
 ```
+
 Where `<func>` is a function that will determine what exactly we want to find the max of. In other words, this function will be executed for each element in the array, and whatever is returned by the function is what it will find the max of. If it helps to conceptualize it differently, imagine that the function creates a whole separate array with entries equal to the function executed on that element. With this new mapped array, it finds a maximum value and returns it.
 
 Let's start with finding the min and max corsi-for values. In that case, we would find them like this:
