@@ -67,17 +67,17 @@ Before moving on to coding, open the index.html file in your text editor. Notice
 ```html
 <head>
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
-    <title>Hockey Viz with D3.js Tutorial - Part 1</title>
-    <style media="screen">
-      svg {
-        font-family: 'Open Sans', sans-serif;
-        background: #eee;
-      }
-      text {
-        font-weight: 300;
-        fill: #333;
-      }
-    </style>
+  <title>Hockey Viz with D3.js Tutorial - Part 1</title>
+  <style media="screen">
+    svg {
+      font-family: 'Open Sans', sans-serif;
+      background: #eee;
+    }
+    text {
+      font-weight: 300;
+      fill: #333;
+    }
+  </style>
 </head>
 ```
 In the header, there is a link to a google font (Open Sans), along with a little CSS for styling. The default font for HTML is Times New Roman. Please, I beg you, never use a serif font for visualizing data. Most serif fonts do not format numbers uniformly and are often eye sores in general. I've chosen Open Sans out of preference, but feel free to swap it out with [any other one](https://fonts.google.com) you choose.
