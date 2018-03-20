@@ -7,7 +7,7 @@ This is the **first** of a **three-part** "D3.js and Hockey Analytics" series. I
 
 To contact me personally with *any* comments or questions, shoot me an email at alp98@cornell.edu or DM me on Twitter [@AndrewLPeterson](https://twitter.com/AndrewLPeterson).
 ___
-If you're the type of person who has wandered to a stranger's github page, it is likely you have occasionally stumbled upon beautiful data vizualizations all throughout the internet. It's possible you yourself have some experience making plots in R, Python, or Matlab. All of those languages have packages that make it extremely easy to visualize large amounts of data. These packages really are truly amazing, and often suffice for a _majority_ of projects. However, as you gained experience, perhaps you've realized how difficult it is to truly customize these visualizations. Perhaps you've even spent hours laboring to get integrate these plots with a website or app, only to settle for a low-quality screenshot of it. Maybe, in the back of your mind, you've wondered how the engineers at [The New York Times](https://www.nytimes.com/interactive/2017/12/21/us/2017-year-in-graphics.html) and [FiveThirtyEight](https://fivethirtyeight.com/features/the-ridiculousness-of-conference-tournament-locations-in-6-maps/) consistently make gorgeous visualizations that appear beyond the scope of ggplot or matplotlib. 
+If you're the type of person who has wandered to a stranger's github page, it is likely you have occasionally stumbled upon beautiful data vizualizations all throughout the internet. It's possible you yourself have some experience making plots in R, Python, or Matlab. All of those languages have packages that make it extremely easy to visualize large amounts of data. These packages really are truly amazing, and often suffice for a _majority_ of projects. However, as you gained experience, perhaps you've realized how difficult it is to truly customize these visualizations. Perhaps you've even spent hours laboring to get integrate these plots with a website or app, only to settle for a low-quality screenshot of it. Maybe, in the back of your mind, you've wondered how the engineers at [The New York Times](https://www.nytimes.com/interactive/2017/12/21/us/2017-year-in-graphics.html) and [FiveThirtyEight](https://fivethirtyeight.com/features/the-ridiculousness-of-conference-tournament-locations-in-6-maps/) consistently make gorgeous visualizations that appear beyond the scope of ggplot or matplotlib.
 
 Far be it from me to come here and to tell you to divorce your dearest visualization library. I will tell that there exists another, however, that can satisfy your unquenched desires for beautiful, customized visualizations. Like a siren, one library has long been singing your name, waiting for you to turn towards its shores. Unlike the sirens, it will not lead you towards inevitable death, but expand your life into new horizons.
 
@@ -45,22 +45,24 @@ If you want to avoid using the command line, just press the green "Clone or Down
 ```terminal
 $ git clone https://github.com/andrew-pete/Hockey-D3-Tutorial.git
 ```
+
 Open up the project in your favorite text editor. Don't have one? Try [Atom](https://atom.io/)!
 
 Notice the directory structure. The file that's rendered is `index.html`, which sits in the root directory. Also within our root directory there exists `data/` and `js/`. While one does not need to separate, it is a healthy practice to decouple JavaScript files, CSS, HTML, and your data. Notice that our game file `data/game.csv` is a comma-separated-values file. If you wish, open it up in Excel for a formatted view.
 
 Finally, we need to deploy a local server. There are many ways to do this. This is necessary in order to load in external resources, like d3 and our data file. To do this, execute the following command:
 
-```
+```terminal
 $ python -m SimpleHttpServer 8000
 ```
+
 In your web browser, navigate to the page [localhost:8000](http://localhost:8000).
 
 ##### Having trouble setting up your local server?
 You likely don't have Python installed. Visit [this page](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_testing_server) to troubleshoot.
 
 ### One last bit before we get started
-Before moving on to coding, open the index.html file in your text editor. Notice how the file comes with several things already included. 
+Before moving on to coding, open the index.html file in your text editor. Notice how the file comes with several things already included.
 
 ```html
 <head>
@@ -124,7 +126,7 @@ var padding = {
 };
 ```
 
-These numbers aren't gospel, they are mostly set to allocate enough space for titles, axes, and whitespace. When selecting values, we realize we don't want the data to be over-concentrated. 
+These numbers aren't gospel, they are mostly set to allocate enough space for titles, axes, and whitespace. When selecting values, we realize we don't want the data to be over-concentrated.
 
 Later, we will add another variable to this section for team colors.
 
@@ -148,7 +150,7 @@ We initialize our scales as follows:
 var xScale = d3.scaleLinear().range([padding.left, width-padding.right]);
 
 // In SVG coordinates (0,0) is the top left
-var yScale = d3.scaleLinear().range([padding.top, height-padding.bottom]); 
+var yScale = d3.scaleLinear().range([padding.top, height-padding.bottom]);
 ```
 `scaleLinear()` is a d3 function that initializes a linear scale. As stated above, we give it a range within our svg to map to. Since we want to have some space for axis labels on the left, and perhaps keys on the right, we set our xScale to be in the interval [\<left padding\>, \<svg width\> - \<right padding\>]. In our example, the range is [60, 740].
 
@@ -174,9 +176,9 @@ d3.csv(<file location>, <preprocess function>, <callback function>, ...)
 
 `file location` will be a string that represents the location of the data file we are loading. This is either relative to the root folder or an absolute location. For us, the value will be `'./data/game.csv'`.
 
-The second argument is a preprocessing function. Since our dataset is a CSV, all numbers will be loaded in as strings. In order to do any mathematical operations, we need to cast them to numbers. That's the purpose of this argument. This expects to receive a function that is then executed *line by line*. 
+The second argument is a preprocessing function. Since our dataset is a CSV, all numbers will be loaded in as strings. In order to do any mathematical operations, we need to cast them to numbers. That's the purpose of this argument. This expects to receive a function that is then executed *line by line*.
 
-This is a bit tricky. 
+This is a bit tricky.
 
 Imagine that our CSV is really just a list of players, and each player has certain attributes like "Corsi For", "Time on Ice", etc... So we want our function to take in a *player object* with those qualities. The function below is what we will use; it may take some time to conceptualize how it all works.
 
@@ -239,7 +241,7 @@ We assign similar variables for our max and min corsi-against.
 var minCA = d3.min(data, function (player) {
   return player["CA"];
 });
-  
+
 var maxCA = d3.max(data, function (player) {
   return player["CA"];
 });
@@ -263,7 +265,7 @@ var minVal = Math.min(minCF, minCA) - 1;
 var maxVal = Math.max(maxCF, maxCA) + 1;
 ```
 
-Now, our rScale is a bit more tricky. Looking at the data, we see that the times are given in the string form *mm:ss* (e.g. `'14:34'`). Unluckily for us, JavaScript cannot magically parse this and understand it as "14 minutes, 34 seconds". It also doesn't know how to compare to time strings like that. What it *does know* is how to compare two numbers (as we utilized earlier). We need to create a function to convert a TOI string to some number, either minutes or seconds. 
+Now, our rScale is a bit more tricky. Looking at the data, we see that the times are given in the string form *mm:ss* (e.g. `'14:34'`). Unluckily for us, JavaScript cannot magically parse this and understand it as "14 minutes, 34 seconds". It also doesn't know how to compare to time strings like that. What it *does know* is how to compare two numbers (as we utilized earlier). We need to create a function to convert a TOI string to some number, either minutes or seconds.
 
 Let's define a function *outside of* our `d3.csv` scope (i.e. brackets):
 
@@ -278,9 +280,10 @@ function timeInSeconds(toi) {
   return minutesInt*60 + secondsInt;
 }
 ```
+
 We utilize some JS-magic here to accomplish our task. First, we split our string into segments separated by a colon. For example, `"12:34".split(":")` returns `["12", "34"]`. We then cast each to a number and do some simple arithmetic to return the equivalent number of seconds.
 
-Now we can finish off our `rScale`. Recall that third function I mentioned earlier? Don't scroll up, I'll remind you. It's `d3.extent`. This method is great, because it returns the min and max in one swoop. In a simple example `d3.extent([2,1,3])` will return `[1,3]`. Again, recall that d3 doesn't automatically know what we want to find the max and min of, so we tell it by passing in a function. 
+Now we can finish off our `rScale`. Recall that third function I mentioned earlier? Don't scroll up, I'll remind you. It's `d3.extent`. This method is great, because it returns the min and max in one swoop. In a simple example `d3.extent([2,1,3])` will return `[1,3]`. Again, recall that d3 doesn't automatically know what we want to find the max and min of, so we tell it by passing in a function.
 
 We are now back into the scope of our d3.csv callback function.
 
@@ -290,9 +293,10 @@ var minMaxRadius = d3.extent(data, function (player) {
   return timeInSeconds(player["TOI"]);
 });
 ```
-Easy! Let's toss those numbers into our scales and move on. 
 
-```javascript 
+Easy! Let's toss those numbers into our scales and move on.
+
+```javascript
 xScale.domain([minVal, maxVal]);
 yScale.domain([minVal, maxVal]);
 // remember, minMaxRadius is already in form [min, max]
@@ -324,6 +328,7 @@ var colors = {
   }
 };
 ```
+
 Our colors variable stores a Javascript object. Those familiar with python dictionaries should be familiar with the format. At the top level, we have two keys, which are the team abbreviations dictated in the data file.
 
 Each of these teams has a matching nested object that contains HEX color strings for both the stroke and fill of the circle. In English, the stroke is the border color and the fill is the background color of the circle. It's often good design practice to have the stroke and fill to be similar hues but different opacities. Feel free to use the [W3 Color Picker](https://www.w3schools.com/colors/colors_picker.asp) to check the colors we've stored above for each team.
@@ -362,7 +367,7 @@ Circles coordinates are set by the center, rather than by an edge like those pes
 
 Next, we set the radius of the circle using the TOI attribute. Recall that our scale is set to "seconds", so we need to again use our function `timeInSeconds` that we defined earlier like so: `.attr("r", rScale(timeInSeconds(player["TOI"])))`.
 
-We utilize the `colors` variable we set earlier to determine the stroke and fill for our circle. Recall that the `Team` column stores either "PHI" or "OTT", so we can retrieve the appropriate color if we know that value. 
+We utilize the `colors` variable we set earlier to determine the stroke and fill for our circle. Recall that the `Team` column stores either "PHI" or "OTT", so we can retrieve the appropriate color if we know that value.
 
 ```javascript
 .style("fill", colors[player.Team].fill)
@@ -373,7 +378,7 @@ We utilize the `colors` variable we set earlier to determine the stroke and fill
 
 Our last two lines are just cosmetic changes. When dealing with potentially overlapping data, one should always set opacity to something below 1. This is common practice for most visualizations you see on data journalism sites, so I like to stick to it.
 
-Now that the helper function is complete, we need to call it from within our callback, after we've initialized our scales. 
+Now that the helper function is complete, we need to call it from within our callback, after we've initialized our scales.
 
 Add the following call:
 
@@ -382,22 +387,22 @@ renderCircles(data);
 ```
 
 Keep scrolling for an example of what your plot should look like after completing this function.
-#### Version 2 (d3 data-binding) 
+#### Version 2 (d3 data-binding)
 This method leans more heavily on the D3 API. It likely will be a bit confusing, since it combines functional and object-oriented aspects. In essence, we are binding the data to a d3 selection, then we "enter" the selection, telling it how to relate the bound data to attributes of the selection. Don't worry about understanding that right now. Let's look at the code and revist those statements.
 
 Again, we create a function called `renderCircles`. If you already did the previous method and want to give this one a try, just create a new function with a slightly altered name, like `renderCirclesAlt`.
 
-Even if you skipped the last section, I encourage you to look at the line-by-line breakdown of the logistics. I will not repeat them to save space. 
+Even if you skipped the last section, I encourage you to look at the line-by-line breakdown of the logistics. I will not repeat them to save space.
 
 ```javascript
 // 'Functional' data-join-enter-exit approach
 function renderCircles(data) {
-  // bind the data 
+  // bind the data
   var circles = svg.selectAll("circle")
     .data(data);
-  
-  circles.exit().remove(); // in the case where this function is called twice, remove previous circles 
-  
+
+  circles.exit().remove(); // in the case where this function is called twice, remove previous circles
+
   circles.enter().append("circle") // appends a circle for every row in data
     .style("opacity", 0.6) // attributes not associated with data
     .style("stroke-width", 1)
@@ -409,6 +414,7 @@ function renderCircles(data) {
     .style("fill", (d) => colors[d.Team].fill);  
 }
 ```
+
 I've tried to comment the data in such a way to make it easily understandable, but I will again try to dissect this approach.
 
 In the beginning, we select the "not-yet-existent" circles in our svg. With this selection, we bind our data using the `data(...)` method on the selection we've made.
@@ -479,27 +485,27 @@ d3.csv("./data/data.csv", preProcess, function (data) {
   var minCF = d3.min(data, function (player) {
     return player["CF"];
   });
-  
+
   var minCA = d3.min(data, function (player) {
     return player["CA"];
   });
-  
+
   var maxCA = d3.max(data, function (player) {
     return player["CA"];
   });
-  
+
   // Since we want graph to be symmetric
   var minVal = Math.min(minCF, minCA) - 1;
   var maxVal = Math.max(maxCF, maxCA) + 1;
-  
+
   var minMaxRadius = d3.extent(data, function (player) {
     return timeInSeconds(player["TOI"]);
   });
-  
+
   xScale.domain([minVal, maxVal]);
   yScale.domain([minVal, maxVal]);
   rScale.domain(minMaxRadius);
-  
+
   renderCircles(data);
 });
 
@@ -528,17 +534,18 @@ function renderCircles(data) {
   });
 }
 ```
+
 And if you tried the second version of rendering circles, you'll have an additional functions that looks like:
 
 ```javascript
 // 'Functional' data-join-enter-exit approach
 function renderCirclesAlt(data) {
-  // bind the data 
+  // bind the data
   var circles = svg.selectAll("circle")
     .data(data);
-  
-  circles.exit().remove(); // in the case where this function is called twice, remove previous circles 
-  
+
+  circles.exit().remove(); // in the case where this function is called twice, remove previous circles
+
   circles.enter().append("circle") // appends a circle for every row in data
     .style("opacity", 0.6) // attributes not associated with data
     .style("stroke-width", 1)
@@ -555,7 +562,7 @@ If all went well, your page should now have a plot that looks like this:
 ![midpoint-plot](./assets/circles_plot.png)
 We've left a good amount of space for axes and a title, so let's get to those finishing touches. You're so close!
 ### Rendering Axes
-While the plot above looks nice, it closer resembles a piece of abstract art than a data visualization. Axes and labels give context to the numbers. 
+While the plot above looks nice, it closer resembles a piece of abstract art than a data visualization. Axes and labels give context to the numbers.
 
 Luckily for us, D3 can construct an axis with tick marks using the scales we created earlier.
 
@@ -571,11 +578,11 @@ Below is the code to get that job done:
 function renderAxes() {
   var axisY = d3.axisLeft(yScale);
   var axisX = d3.axisTop(xScale);
-  
+
   svg.append("g")
     .attr("transform", "translate(" + padding.left + ",0)")
     .call(axisY);
-  
+
   svg.append("text")
     .attr("transform", "rotate(-90)")
     .attr("y", padding.left)
@@ -583,11 +590,11 @@ function renderAxes() {
     .attr("dy", "-2em")
     .style("text-anchor", "middle")
     .text("Corsi Against (Unadjusted)");    
-  
+
   svg.append("g")
     .attr("transform", "translate(0," + padding.top + ")")
     .call(axisX);
-    
+
   svg.append("text")
     .attr("y", padding.top)
     .attr("x", width/2)
@@ -603,6 +610,7 @@ We'll have to actually call this function from within our callback, below our `r
 var axisY = d3.axisLeft(yScale);
 var axisX = d3.axisTop(xScale);
 ```
+
 Here, we create our two axes via two built-in methods. These have not yet been appended to the svg, but live in the virtual space. In d3v4, we define which side of the axis we want our numbers via `axisTop, axisBottom, axisLeft, axisRight`. Since our axes will be on the top and left, it is natural to have the numbers appear above the axis and to the left of the axis, respectively. Feel free to substitute the converse to see the difference!
 
 ```javascript
@@ -610,6 +618,7 @@ svg.append("g")
   .attr("transform", "translate(" + padding.left + ",0)")
   .call(axisY);
 ```
+
 Here, we actual create a group parent element, appending the y-axis via the `.call(axisY)`. Recall that this axis we default to hugging the left side of the svg. Since we have shifted all of our points by a factor of `padding.left`, we translate our y-axis to the right by `padding.left`.
 
 ```javascript
@@ -621,6 +630,7 @@ svg.append("text")
   .style("text-anchor", "middle")
   .text("Corsi Against (Unadjusted)");    
 ```
+
 Adding a y-axis label requires some quick maths. We rotate the text so that it is parallel to the axis, and set the "x" and "y" attributes on this flipped coordinate plan. `dy` is an attribute that is equivalent to "delta y", or "change in y." You could add this math to the "y" attribute, but I find it easier to read this way. Again, `"text-anchor":"middle"` simple centers the text horizontally, since the coordinate plane is rotated.
 
 Similar logic is applied for the x-axis. You'll notice the main difference is that the translation used `padding.top` and the text has no rotation (yay!).
@@ -654,7 +664,7 @@ A naïve solution go as follows:
 function renderText(data) {
   var nameLabels = svg.selectAll("text.player")
     .data(data)
-  
+
   nameLabels.enter().append("text")
     .attr("class", (d) => "player " + d.Player.split(" ").join("_"))
     .attr("x", (d) => xScale(d["CF"])) // using es6 function format
@@ -675,7 +685,7 @@ When you reload with this code, your observant mind should notice a problem righ
 
 Well, on a universal level, this problem is quite difficult. It involves checking for collisions using bounded boxes, etc. etc... That's messy. For an introduction, let's just address this on a case-by-case basis. Note that our solution for this game **will not** work for every game.
 
-Since we have the data readily available, we can identify who the offending players are. For each pair of overlapping points, we just need to keep track of one of them. If we move *both*, we'll just have overlap at a different point. 
+Since we have the data readily available, we can identify who the offending players are. For each pair of overlapping points, we just need to keep track of one of them. If we move *both*, we'll just have overlap at a different point.
 
 The solution we'll implement goes as follows:
 
@@ -739,9 +749,9 @@ At this point, you have a scatter plot that looks nice and is usable! If you fee
 - *Context Lines*: add Corsi-for % lines so the viewer can more easily judge how their favorite (or least favorite) players did.
 - *Highlighting outliers*: constructing a narrative and drawing the viewer's eye to a set of players.
 
-For the sake of time and space, there will be less line-by-line analysis. At this point, most of the work that needs to be done is arithmetic and geometry. Hopefully you are getting comfortable navigating D3. 
+For the sake of time and space, there will be less line-by-line analysis. At this point, most of the work that needs to be done is arithmetic and geometry. Hopefully you are getting comfortable navigating D3.
 
-If you have any questions or comments on the following sections, feel free to reach out by email or [Twitter](https://twitter.com/AndrewLPeterson). 
+If you have any questions or comments on the following sections, feel free to reach out by email or [Twitter](https://twitter.com/AndrewLPeterson).
 ### Creating Circle-Size and Team Keys
 While team colors may be obvious to hardcore fans, you should make no assumptions as to who is looking at your visualization. The last thing we want to do is arrogantly create a visualization so "high-level" that no one understands it. For this reason, keys are extremely useful.
 
@@ -766,9 +776,9 @@ Let's define some variables that will determine the shape and position of our ke
 function renderKey() {
   var keyHeight = 120; // Height of key
   var keyPadding = 40; // Separation from scatter plot and right svg border
-    
+
   var startX = width - padding.right + keyPadding;
-  var startY = height - padding.bottom - keyHeight; 
+  var startY = height - padding.bottom - keyHeight;
   var dy = 30; // Separation between team circles
   var circleRadius = 10; // Default team circle radius
   ...
@@ -796,7 +806,7 @@ Object.keys(colors).forEach( (team, i) => {
     .style("stroke", colors[team].stroke)
     .style("opacity", 0.7)
     .style("stroke-width", 1);
-  
+
   teamKey.append("text")
     .attr("x", circleRadius)
     .attr("dx", 10)
@@ -840,7 +850,7 @@ times.forEach( (toi, i) => { // the i variable is index in array
     .style("stroke", "rgba(0,0,0,0.4)")
     .style("stroke-width", 1)
     .style("fill", "none");
-  
+
   timeKey.append("text")
     .attr("x", cx)
     .attr("y", cy)
@@ -858,21 +868,21 @@ Now you can close out your function and call it from the callback body. The end 
 
 A lot of things I wrote are completely cosmetic and thus totally optional. Concentric circles sharing a center works perfectly fine too! Do whatever looks most natural for **you**.
 
-### Rendering Context (CF%) Lines 
+### Rendering Context (CF%) Lines
 
 In order to gauge a player's performance using our graph, one has to scan the x and y axes, then perform some mental math to see how good (above 50% shots for?) or bad (below 50% shots for) that player did. We can, and should, remove that burden!
 
 Compare the plot below with your current plot, and you'll notice how a few context lines can alleviate a lot of uncertainty.
 
-![Plot with context lines](./assets/plot_with_context.png) 
+![Plot with context lines](./assets/plot_with_context.png)
 
 Notice how much easier it is now to gauge a player's performance. It is multitudes easier to interpret an interval (i.e. somewhere between 50%-60%) than exact x,y coordinates.
 
 A fair warning, calculating the endpoints for these lines *is not fun*. For one, we want the lines to stay within the confines of our plot and not overextend into our margins. This is difficult, since our padding is completely man-made. Like typical loud males, they don't care or notice if they are taking up too much space.
 
-Say we want to plot a line with proportion = *p*. To find the line that describes this, we use the equation: x/(x+y) = p. 
+Say we want to plot a line with proportion = *p*. To find the line that describes this, we use the equation: x/(x+y) = p.
 
-And thus we can solve for: 
+And thus we can solve for:
 
 - x = p/(1-p)*y
 - y = (1-p)/p*x
@@ -894,10 +904,10 @@ function renderLines(min, max) {
 
 
   var lines = [midWayLine, sixtyPercent, fourtyPercent, seventyPercent, thirtyPercent];
-  
+
   var lineGroup = svg.append("g")
     .attr("class", "line-group");
-  
+
   lines.forEach(function (coords) {
     lineGroup.append("line")
       .style("stroke", "#777")
@@ -907,7 +917,7 @@ function renderLines(min, max) {
       .attr("y1", yScale(coords.y1))
       .attr("x2", xScale(coords.x2))
       .attr("y2", yScale(coords.y2));
-      
+
     lineGroup.append("text")
       .text(coords.text)
       .attr("x", xScale(coords.x2))
@@ -920,16 +930,17 @@ function renderLines(min, max) {
   });
 }
 ```
+
 At the very least, my minor in Mathematics gave me enough insight to draw some lines properly.
 
 ### Constructing a Narrative - Highlighting Outliers
 At this point, our plot is ready to be Tweeted out. It's finished its job, and it has finished in style.
 
-However, what if our goal was not to give a high-level view of the game data? 
+However, what if our goal was not to give a high-level view of the game data?
 
 #### Warning: a tad more JS experience recommended for this
 
-What if we wanted to use this data to support a narrative? Look again at the plot. Does the disturbingly large separation of the Flyers' first and fourth lines not seem strange? Perhaps you're a data journalist, and you want to use this plot to support your newest installment of ripping into the Flyers' depth players. 
+What if we wanted to use this data to support a narrative? Look again at the plot. Does the disturbingly large separation of the Flyers' first and fourth lines not seem strange? Perhaps you're a data journalist, and you want to use this plot to support your newest installment of ripping into the Flyers' depth players.
 
 If you present the plot as is, it is difficult to sort through the noise. We have a lot of circles on this plot. Most don't factor into our narrative. However, we wouldn't want to remove them completely, since they do provide context.
 
@@ -960,25 +971,25 @@ function highlightOutliers(playerSets) {
   // recall we gave all circles class names according to their names
   var outlierClasses = [];
   var flattenedArray = [].concat.apply([], playerSets); // gives us an array of names
-  
+
   flattenedArray.forEach( (playerName) => {
     var className = playerName.split(" ").join("_");
     outlierClasses.push("." + className); // add class to list
   });
-  
+
   // We're creating a big selector string to grab all data points that aren't important
   var stringList = outlierClasses.map(className => ":not(" + className + ")");
   var selectorBoringCircles = "circle.player" + stringList.join("");
   var selectorBoringText = "text.player" + stringList.join("");
-  
+
   var boringOpacity = 0.15;
-  // Loop through all the boring circles and 
+  // Loop through all the boring circles and
   svg.selectAll(selectorBoringCircles)
     .style("opacity", boringOpacity);
-  
+
   svg.selectAll(selectorBoringText)
     .style("opacity", boringOpacity);
-    
+
   // Let's outline the two groups!
   svg.append("ellipse")
     .attr("cx", xScale(20))
@@ -989,11 +1000,11 @@ function highlightOutliers(playerSets) {
     .style("stroke", "rgba(0,0,0,0.5)")
     .style("stroke-width", 1)
     .style("fill", "none");
-  
+
   svg.append("ellipse")
     .attr("cx", xScale(4.5))
     .attr("cy", yScale(12))
-    .attr("rx", xScale(4.5) - xScale(3.2)) 
+    .attr("rx", xScale(4.5) - xScale(3.2))
     .attr("ry", yScale(12) - yScale(10))
     .style("stroke-dasharray", "5, 5") // dotted ellipse outline
     .style("stroke", "rgba(0,0,0,0.5)")
@@ -1013,7 +1024,7 @@ highlightOutliers(outliers);
 Boom, we're done!
 
 ## Conclusion
-I hope through this immersive experience that you have gained a tremendous amount of new knowledge and appreciation for good data viz. Even a scatter plot takes a lot of work. However, I also trust that you see how uniquely versatile D3 is. 
+I hope through this immersive experience that you have gained a tremendous amount of new knowledge and appreciation for good data viz. Even a scatter plot takes a lot of work. However, I also trust that you see how uniquely versatile D3 is.
 
 The learning curve is high, but almost nothing is impossible with it. I would have no idea how to easily conquer the "outlier problem" in any language other than JavaScript (take that with a grain of salt, it's my primary language).
 
