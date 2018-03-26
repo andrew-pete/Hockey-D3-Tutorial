@@ -1,5 +1,10 @@
 # Hockey Data Visualization with D3.js
 #### Lesson 1/3
+
+## Table of Contents 
+1. [Introduction](#introduction)
+2. [Getting Started](#getting-started)
+
 ## Introduction
 
 #### Note from the Author
