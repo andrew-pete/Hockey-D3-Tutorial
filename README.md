@@ -68,7 +68,9 @@ $ git clone https://github.com/andrew-pete/Hockey-D3-Tutorial.git
 
 Open up the project in your favorite text editor. Don't have one? Try [Atom](https://atom.io/)!
 
-Notice the directory structure. The file that's rendered is `index.html`, which sits in the root directory. Also within our root directory there exists `data/` and `js/`. While one does not need to separate, it is a healthy practice to decouple JavaScript files, CSS, HTML, and your data. Notice that our game file `data/game.csv` is a comma-separated-values file. If you wish, open it up in Excel for a formatted view.
+Notice the directory structure. The file that's rendered is `index.html`, which sits in the root directory. Also within our root directory there exists `data/` and `js/`. While one does not need to separate, it is a healthy practice to decouple JavaScript files, CSS, HTML, and your data. 
+
+Notice that our game file `data/game.csv` is a comma-separated-values file. If you wish, open it up in Excel for a formatted view. The header row (column names) will serve as the keys by which each cell is store. The rows indicate individual player "objects". Therefore, the value of a cell at row 3, column 3 is equivalent to Player 3's corresponding third attribute.
 
 Finally, we need to deploy a local server. There are many ways to do this. This is necessary in order to load in external resources, like d3 and our data file. To do this, execute the following command:
 
