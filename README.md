@@ -2,8 +2,23 @@
 #### Lesson 1/3
 
 ## Table of Contents 
-1. [Introduction](#introduction)
-2. [Getting Started](#getting-started)
+* [Introduction](#introduction)
+* [Getting Started](#getting-started)
+* [End Goal](#wooh-lets-code)
+* [Set-Up](#pre-data-setup)
+	* [Scales (1/2)](#scales---part-1)
+	* [Loading in Data](#loading-in-the-data)
+	* [Scales (2/2)](#scales---part-2)
+* [Creating the Visualization](#rendering-the-circles)
+	* [Rendering Circles - Loops](#version-1-looping-through-the-data)
+	* [Rendering Circles - d3 data-join](#version-2-d3-data-binding)
+	* [Rendering Axes](#rendering-axes)
+	* [Rendering Player Names](#rendering-names)
+* [Advanced Sections](#optional-advanced-additions)
+	* [Creating the Legend](#creating-circle-size-and-team-keys)
+	* [Visualizing CF% Context Lines](#rendering-context-cf-lines)
+	* [Highlighting Outliers](#constructing-a-narrative---highlighting-outliers)
+
 
 ## Introduction
 
@@ -394,8 +409,12 @@ renderCircles(data);
 ```
 
 Keep scrolling for an example of what your plot should look like after completing this function.
-#### Version 2 (d3 data-binding)
-This method leans more heavily on the D3 API. It likely will be a bit confusing, since it combines functional and object-oriented aspects. In essence, we are binding the data to a d3 selection, then we "enter" the selection, telling it how to relate the bound data to attributes of the selection. Don't worry about understanding that right now. Let's look at the code and revist those statements.
+#### Version 2 (d3 data-join method)
+This method leans more heavily on the D3 API. It likely will be a bit confusing, since it combines functional and object-oriented aspects. 
+
+[Click here](#https://bost.ocks.org/mike/join/) for a helpful article from the creator of d3.js. He talks about data-joining on a conceptual level. I'll do my best to summarize it below.
+
+In essence, we are binding the data to a d3 selection, then we "enter" the selection, telling it how to relate the bound data to attributes of the selection. Don't worry about understanding that right now. Let's look at the code and revist those statements.
 
 Again, we create a function called `renderCircles`. If you already did the previous method and want to give this one a try, just create a new function with a slightly altered name, like `renderCirclesAlt`.
 
