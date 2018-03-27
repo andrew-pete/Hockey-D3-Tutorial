@@ -414,7 +414,7 @@ Keep scrolling for an example of what your plot should look like after completin
 #### Version 2 (d3 data-join method)
 This method leans more heavily on the D3 API. It likely will be a bit confusing, since it combines functional and object-oriented aspects. 
 
-[Click here](#https://bost.ocks.org/mike/join/) for a helpful article from the creator of d3.js. He talks about data-joining on a conceptual level. I'll do my best to summarize it below.
+[Click here](https://bost.ocks.org/mike/join/) for a helpful article from the creator of d3.js. He talks about data-joining on a conceptual level. I'll do my best to summarize it below.
 
 In essence, we are binding the data to a d3 selection, then we "enter" the selection, telling it how to relate the bound data to attributes of the selection. Don't worry about understanding that right now. Let's look at the code and revist those statements.
 
@@ -438,8 +438,8 @@ function renderCircles(data) {
     .attr("cx", function(d) {return xScale(d["CF"])})
     .attr("cy", function(d) {return yScale(d["CA"])})
     .attr("r", function(d) {return rScale(timeInSeconds(d["TOI"]))})
-    .style("stroke", (d) => colors[d.Team].stroke)
-    .style("fill", (d) => colors[d.Team].fill);  
+    .style("stroke", (d) => colors[d.Team].stroke) // this is ES6 function format
+    .style("fill", (d) => colors[d.Team].fill);  //  It's shorthand for what you see above
 }
 ```
 
