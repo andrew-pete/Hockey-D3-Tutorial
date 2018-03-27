@@ -338,7 +338,7 @@ Let's create a helper function outside of the callback that we will utilize with
 
 Recall that all of our scales are *set* to map from data (Corsi-for, Corsi-against) coordinates to svg coordinates. When we are setting circle attributes, we will utilize these scales.
 
-Since we are forward thinking people, we quickly realize that we want to predefine some team colorss. Our data conveniently has a team name attribute, so we want to use that to determine the circle color. Let's go back to the top, to where we define our global variables, and add one more.
+Since we are forward thinking people, we quickly realize that we want to predefine some team colors. Our data conveniently has a team name attribute, so we want to use that to determine the circle color. Let's go back to the top, to where we define our global variables, and add one more.
 
 ```javascript
 var colors = {
@@ -380,7 +380,11 @@ Okay, there's a lot going on here, so let's go line-by-line dissecting exactly w
 
 `svg.append("circle")` does exactly what it sounds like it does when read out in plain English. We are appending a circle element to our svg. However, the circle doesn't know how big it should be, where it needs to go, or what color it should be. We need to specify each attribute, which is exactly what we will do. Notice that we do not end the line with a semi-color (`;`). This is intentional, as we do not want to close out the evaluation too early.
 
-`.attr("class", player.Player.split(" ").join("_"))` sets the unique id of the circle to be an under-bar separated string of the player's name. This can be utilized for future reference or interactivity. In general, it is good practice to add unique ids to your svg elements. Since our name attribute is stored under the "Player" column, we select that column. Id's cannot have spaces in them, so we must change the name to be instead separated by something else. I've chosen the `_` character. Notice that we split the string on space, separating the first and last names, then rejoin that array into a string but this time using `_` as a connector between the elements.
+`.attr("class", "player " + player.Player.split(" ").join("_"))` sets the class name of the circle to be an under-bar separated string of the player's name. Each circle will also have a class called "player," that we will use later for selecting the circles. So, for example, our bubble for Claude Giroux will have classes `.player.Claude-Giroux`. 
+
+If we want to select this circle later for some sort of interaction, we only need to know the name.
+
+ In general, it is good practice to add unique ids/classes to your svg elements. Since our name attribute is stored under the "Player" column, we select that column. Id's or classes cannot have spaces in them (it is then interpretted as *multiple* classes, so we must change the name to be instead separated by something else. I've chosen the `_` character. Notice that we split the string on space, separating the first and last names, then rejoin that array into a string but this time using `_` as a connector between the elements.
 
 ```javascript
 .attr("cx", xScale(player["CF"]))
